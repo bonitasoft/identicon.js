@@ -11,11 +11,13 @@
  */
 
 (function() {
-    Identicon = function(hash, size, margin){
-        this.hash   = hash;
-        this.size   = size   || 64;
-        this.margin = margin || .08;
-    }
+    Identicon = function(options){
+        options = options || {};
+        this.hash   = options.hash;
+        this.size   = options.size || 64;
+        this.margin = options.margin || 0.08;
+        this.options = options;
+    };
 
     Identicon.prototype = {
         hash:   null,
@@ -27,14 +29,24 @@
                 size    = this.size,
                 margin  = Math.floor(size * this.margin),
                 cell    = Math.floor((size - (margin * 2)) / 5),
-                image   = new PNGlib(size, size, 256);
+                image   = new PNGlib(size, size, 256),
+                bg,
+                fg;
 
-            // light-grey background
-            var bg      = image.color(240, 240, 240);
+            if(this.options.bg) {
+              bg = image.color(this.options.bg[0] || 240, this.options.bg[1] || 240, this.options.bg[2] || 240);
+            } else {
+              // light-grey background
+              bg = image.color(240, 240, 240);
+            }
 
-            // foreground is last 7 chars as hue at 50% saturation, 70% brightness
-            var rgb     = this.hsl2rgb(parseInt(hash.substr(-7), 16) / 0xfffffff, .5, .7),
-                fg      = image.color(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255);
+            if(this.options.fg) {
+              fg = image.color(this.options.fg[0] || 240, this.options.fg[1] || 240, this.options.fg[2] || 240);
+            } else {
+              // foreground is last 7 chars as hue at 50% saturation, 70% brightness
+              var rgb     = this.hsl2rgb(parseInt(hash.substr(-7), 16) / 0xfffffff, 0.5, 0.7);
+             fg = image.color(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255);
+            }
 
             // the first 15 characters of the hash control the pixels (even/odd)
             // they are drawn down the middle first, then mirrored outwards
@@ -68,7 +80,7 @@
         hsl2rgb: function(h, s, b){
             h *= 6;
             s = [
-                b += s *= b < .5 ? b : 1 - b,
+                b += s *= b < 0.5 ? b : 1 - b,
                 b - h % 1 * s * 2,
                 b -= s *= 2,
                 b,
@@ -86,7 +98,7 @@
         toString: function(){
             return this.render().getBase64();
         }
-    }
+    };
 
     window.Identicon = Identicon;
 })();
