@@ -34,14 +34,14 @@
                 fg;
 
             if(this.options.bg) {
-              bg = image.color(this.options.bg[0] || 240, this.options.bg[1] || 240, this.options.bg[2] || 240);
+              bg = image.color(this.options.bg[0] || 240, this.options.bg[1] || 240, this.options.bg[2] || 240, this.options.bg[3]  >= 0 ? this.options.bg[3] : 255);
             } else {
               // light-grey background
               bg = image.color(240, 240, 240);
             }
 
             if(this.options.fg) {
-              fg = image.color(this.options.fg[0] || 240, this.options.fg[1] || 240, this.options.fg[2] || 240);
+              fg = image.color(this.options.fg[0] || 240, this.options.fg[1] || 240, this.options.fg[2] || 240, this.options.fg[3]  >= 0 ? this.options.fg[3] : 255);
             } else {
               // foreground is last 7 chars as hue at 50% saturation, 70% brightness
               var rgb     = this.hsl2rgb(parseInt(hash.substr(-7), 16) / 0xfffffff, 0.5, 0.7);
